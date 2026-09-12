@@ -1,59 +1,49 @@
-# Laboratory Information Management System (LIMS) Core Module
+# Laboratory System Module & Test Suite Overview
 
-## Project Overview
+## Project Summary
 
-This assignment contains a self-contained Python module (`lab_system.py`) simulating a Laboratory Information Management System core processing unit alongside a comprehensive test suite (`test_lab_system.py`).
+This project includes a Python module (`lab_system.py`) for managing laboratory test samples and a complete unit test suite (`test_lab_system.py`) built with `pytest`.
 
-### Design & Compliance Standards
-* **Style Guide (PEP 8):** Uses explicit type hints, snake_case function/variable naming, PascalCase class naming, and strict line-length limits.
-* **Documentation (PEP 287):** Fully documented using reStructuredText (reST) field tags (`:param:`, `:type:`, `:return:`, `:rtype:`, `:raises:`, `:ivar:`) embedded within triple-quoted docstrings.
-* **Testing Framework:** Uses `pytest` with parameterized test vectors.
-
----
-
-## Core Class Architecture (`lab_system.py`)
-
-The core module defines a primary class, `LaboratorySampleProcessor`, and a custom exception class, `InvalidSampleError`.
-
-### Methods Summary
-1. `__init__(sample_id, client_name, test_results, metadata)`  
-   Initializes sample records with strong fallback defaults for data structures.
-2. `validate_sample()`  
-   Enforces operational integrity by verifying non-empty strings, valid workflow states, and rejection of non-numeric or `NaN` values.
-3. `calculate_statistics()`  
-   Computes mean, variance, standard deviation, minimum, maximum, and result counts while gracefully handing floating-point infinity values.
-4. `update_status(new_status)`  
-   Handles status state transitions with case-insensitive input normalization.
-5. `set_metadata_entry(key, value)`  
-   Dynamically appends metadata key-value attributes with string key sanitization.
-6. `generate_report()`  
-   Assembles a complete state report including metadata and calculated statistics.
+### Key Features & Standards
+* **PEP 8 Compliant:** Clean python code formatting, explicit type hints, and standard naming rules.
+* **PEP 287 Docstrings:** Full reStructuredText documentation across all methods and classes using standard tags (`:param:`, `:return:`, `:raises:`).
+* **Automated Testing:** Standard smoke tests combined with deep edge-case testing using `pytest`.
 
 ---
 
-## Test Suite & Edge-Case Strategy (`test_lab_system.py`)
+## What the Code Does (`lab_system.py`)
 
-The test suite covers standard operational paths as well as extreme non-standard inputs often missed by standard test coverage tools.
+The main module contains a class called `LaboratorySampleProcessor` and a custom error class `InvalidSampleError`.
 
-### Test Categories
-
-| Category | Description & Test Objectives |
-| :--- | :--- |
-| **Smoke Tests** | Verifies basic class instantiation and standard end-to-end sample lifecycle processing. |
-| **Unicode & Internationalization** | Tests support for non-Latin characters (Chinese, Arabic, Greek, German Umlauts) and Emojis in string identifiers and metadata fields. |
-| **Boundary & Large Data** | Tests resilience against extremely long string inputs (1,000,000 characters) and whitespace-only identifiers. |
-| **Special Floating-Point Operations** | Evaluates mathematical handling of `+inf` and `-inf`, ensuring `NaN` values correctly raise an `InvalidSampleError`. |
-| **Workflow State Integrity** | Ensures valid status updates succeed while unknown state transitions fail gracefully. |
+### Functions Included:
+1. `__init__`: Sets up sample details (IDs, client names, lab measurements, metadata) with safe defaults.
+2. `validate_sample`: Makes sure IDs are not blank, statuses are valid, and numbers are usable (blocks missing or `NaN` values).
+3. `calculate_statistics`: Finds the mean, standard deviation, variance, min, max, and sample counts. It handles infinity (`inf`) gracefully without crashing.
+4. `update_status`: Updates sample status (e.g., from `RECEIVED` to `IN_ANALYSIS`) while ignoring capitalization mistakes.
+5. `set_metadata_entry`: Adds custom key-value metadata tags to samples.
+6. `generate_report`: Creates a summary dictionary containing all sample attributes and calculated stats.
 
 ---
 
-## Execution Instructions
+## Test Coverage & Edge Cases (`test_lab_system.py`)
 
-To execute the test suite and verify standard compliance, run the following commands in your terminal:
+The test file makes sure the code works under normal conditions and doesn't break under unusual inputs:
+
+* **Smoke Tests:** Checks basic initialization and runs a complete sample through the normal workflow.
+* **Special Characters & Languages:** Tests Arabic, Chinese, Greek, German, and Emoji text in sample IDs, client names, and metadata keys.
+* **Extreme String Sizes:** Verifies that massive text inputs (up to 1,000,000 characters) work without error.
+* **Infinity & Special Numbers:** Tests how statistics handle positive infinity (`inf`) and negative infinity (`-inf`), and verifies that `NaN` values are safely rejected.
+* **Invalid Data Handling:** Confirms that empty IDs, blank spaces, and unknown statuses correctly raise errors.
+
+---
+
+## How to Run the Tests
+
+Run the following commands in your terminal:
 
 ```bash
-# Execute unit and smoke tests
+# Run all tests
 pytest test_lab_system.py -v
 
-# Run with test coverage analysis
+# Run tests with a coverage report
 pytest --cov=lab_system test_lab_system.py
