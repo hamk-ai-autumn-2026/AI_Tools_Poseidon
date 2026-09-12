@@ -31,7 +31,6 @@ A modern, fully responsive, single-page website for a travel company called **Wa
 
 * **AI Model / LLM Used:** Google Gemini
 * **Developer:** Google
-* **Agents/Secondary Models Used:** None (Single LLM session)
 * **Tasks Performed:** Generated the site structure, responsive Bootstrap layout, custom CSS keyframe animations, promotional text, and user stories.
 
 
