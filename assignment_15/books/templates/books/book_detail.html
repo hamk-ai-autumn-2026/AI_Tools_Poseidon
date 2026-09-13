@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ book.title }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 60px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 16px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>{{ book.title }}</h1>
+
+    <p>
+        <strong>Author:</strong>
+        {{ book.author }}
+    </p>
+
+    <p>
+        <strong>Publication year:</strong>
+        {{ book.publication_year }}
+    </p>
+
+    <p>
+        <strong>Genre:</strong>
+        {{ book.genre }}
+    </p>
+
+    <h2>Description</h2>
+
+    <p>{{ book.description }}</p>
+
+    <a class="back" href="{% url 'home' %}">
+        ← Back to library
+    </a>
+
+</div>
+
+</body>
+</html>
