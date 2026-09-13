@@ -2,8 +2,14 @@ import { useState, useMemo } from 'react';
 import { initialDestinations } from '../data/destinations';
 
 export function useItinerary() {
-  const [selectedCity, setSelectedCity] = useState(initialDestinations[0]);
+  const [selectedCity, setSelectedCityState] = useState(initialDestinations[0]);
   const [days, setDays] = useState(initialDestinations[0].defaultItinerary);
+
+  // Custom function to change the city AND load its specific itinerary
+  const setSelectedCity = (city) => {
+    setSelectedCityState(city);
+    setDays(city.defaultItinerary || []);
+  };
 
   const totalSpent = useMemo(() => {
     return days.reduce(
