@@ -69,3 +69,4 @@ vercel
 ## Screenshots
 
 ![Dark theme](screenshots/dark_mood.png)
+![Dark theme](screenshots/light_mood.png)
