@@ -68,5 +68,4 @@ vercel
 
 ## Screenshots
 
-![Light theme](screenshots/light.png)
-![Dark theme](screenshots/dark.png)
+![Dark theme](screenshots/dark_mood.png)
