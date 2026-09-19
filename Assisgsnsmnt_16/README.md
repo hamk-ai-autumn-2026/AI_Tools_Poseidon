@@ -2,7 +2,7 @@
 
 A front-end drawing app built with plain HTML, CSS and JavaScript — no framework, no build step, no backend. Everything runs in the browser; the only thing kept between visits is your theme preference, stored in `localStorage`.
 
-**Live demo:** _(paste your deployed URL here)_
+
 
 ## Files
 
