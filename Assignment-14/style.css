@@ -1,0 +1,151 @@
+:root {
+    --neon-cyan: #00f0ff;
+    --neon-pink: #ff007f;
+    --neon-green: #00ff66;
+    --neon-yellow: #ffe600;
+    --neon-purple: #9d00ff;
+    --bg-dark: #05020a;
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    font-family: 'Rajdhani', sans-serif;
+    color: #ffffff;
+}
+
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Canvas Fullscreen */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: radial-gradient(circle at center, #0c051d 0%, #030107 100%);
+}
+
+/* Cyberpunk UI Glass Panels */
+.cyber-panel {
+    background: rgba(10, 5, 25, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+}
+
+.cyber-panel-pink {
+    border-color: rgba(255, 0, 127, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.2), inset 0 0 15px rgba(255, 0, 127, 0.05);
+}
+
+/* Button Styling */
+.cyber-btn {
+    position: relative;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(157, 0, 255, 0.2) 100%);
+    border: 1px solid var(--neon-cyan);
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    cursor: pointer;
+}
+
+.cyber-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.4) 0%, rgba(255, 0, 127, 0.4) 100%);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.cyber-btn:active {
+    transform: translateY(1px);
+}
+
+.cyber-btn-pink {
+    border-color: var(--neon-pink);
+    background: linear-gradient(135deg, rgba(255, 0, 127, 0.2) 0%, rgba(157, 0, 255, 0.2) 100%);
+}
+
+.cyber-btn-pink:hover {
+    background: linear-gradient(135deg, rgba(255, 0, 127, 0.5) 0%, rgba(255, 230, 0, 0.4) 100%);
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+}
+
+/* Glowing Text Effects */
+.glow-cyan {
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+}
+
+.glow-pink {
+    text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+}
+
+.glow-green {
+    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+}
+
+/* Progress Bar Inner Animation */
+.bar-glow {
+    box-shadow: 0 0 12px currentColor;
+}
+
+/* Screen overlays */
+.overlay-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(3, 1, 8, 0.85);
+    backdrop-filter: blur(8px);
+    transition: opacity 0.3s ease;
+}
+
+.hidden-screen {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Custom Scrollbar for Highscores / Help */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(10, 5, 25, 0.5);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--neon-cyan);
+    border-radius: 3px;
+}
+
+/* Touch Control Overlay for Mobile */
+.touch-btn {
+    background: rgba(0, 240, 255, 0.15);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}

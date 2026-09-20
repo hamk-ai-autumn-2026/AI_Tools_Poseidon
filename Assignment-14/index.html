@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEON STRIKE: CYBERSPACE DEFENDER</title>
+    <!-- Google Fonts for Cyberpunk Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN for modern responsive HUD elements -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main Game Rendering Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- IN-GAME HEADS UP DISPLAY (HUD) -->
+    <div id="hudOverlay" class="absolute inset-0 z-10 pointer-events-none p-4 md:p-6 flex flex-col justify-between hidden">
+        <!-- Top HUD Bar -->
+        <div class="flex flex-wrap justify-between items-start gap-4">
+            <!-- Health & Shield Bars -->
+            <div class="cyber-panel p-3 md:p-4 min-w-[260px] md:min-w-[320px]">
+                <!-- Shield Bar -->
+                <div class="mb-2">
+                    <div class="flex justify-between text-xs font-orbitron tracking-wider mb-1 text-cyan-400">
+                        <span>SHIELD MATRIX</span>
+                        <span id="hudShieldText">100%</span>
+                    </div>
+                    <div class="w-full bg-slate-900/80 h-3 rounded-sm overflow-hidden border border-cyan-500/30 p-0.5">
+                        <div id="hudShieldBar" class="h-full bg-cyan-400 bar-glow transition-all duration-150" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <!-- Health Bar -->
+                <div>
+                    <div class="flex justify-between text-xs font-orbitron tracking-wider mb-1 text-pink-500">
+                        <span>HULL INTEGRITY</span>
+                        <span id="hudHealthText">100%</span>
+                    </div>
+                    <div class="w-full bg-slate-900/80 h-3 rounded-sm overflow-hidden border border-pink-500/30 p-0.5">
+                        <div id="hudHealthBar" class="h-full bg-pink-500 bar-glow transition-all duration-150" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <!-- Active Power-up Indicator -->
+                <div id="hudPowerupBadge" class="mt-2 text-xs font-orbitron text-yellow-400 flex items-center gap-2 hidden">
+                    <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-ping"></span>
+                    <span id="hudPowerupName">POWERUP ACTIVE</span>
+                </div>
+            </div>
+
+            <!-- Wave & Boss Status Center -->
+            <div class="flex flex-col items-center">
+                <div class="cyber-panel px-6 py-2 text-center">
+                    <div class="text-xs text-slate-400 font-orbitron tracking-widest">CURRENT WAVE</div>
+                    <div id="hudWaveNum" class="text-2xl md:text-3xl font-orbitron font-bold text-cyan-400 glow-cyan">01</div>
+                </div>
+                <div id="hudComboContainer" class="mt-2 text-center opacity-0 transition-opacity duration-300">
+                    <span id="hudComboText" class="font-orbitron font-black text-xl md:text-2xl text-yellow-400 glow-pink">5x COMBO!</span>
+                </div>
+            </div>
+
+            <!-- Score & High Score & Controls -->
+            <div class="cyber-panel p-3 md:p-4 text-right min-w-[180px]">
+                <div class="text-xs text-slate-400 font-orbitron tracking-widest">SCORE</div>
+                <div id="hudScore" class="text-2xl md:text-3xl font-orbitron font-bold text-white glow-cyan mb-1">000000</div>
+                <div class="text-xs text-slate-400 font-orbitron">BEST: <span id="hudHighScore" class="text-cyan-400">0</span></div>
+            </div>
+        </div>
+
+        <!-- Boss Health Bar (Centered top under wave, dynamically shown) -->
+        <div id="hudBossContainer" class="w-full max-w-xl mx-auto my-2 cyber-panel cyber-panel-pink p-3 text-center hidden pointer-events-none">
+            <div class="flex justify-between items-center mb-1 text-xs font-orbitron tracking-widest text-pink-400">
+                <span id="hudBossName">CYBER TITAN - PHASE 1</span>
+                <span id="hudBossHealthText">100%</span>
+            </div>
+            <div class="w-full bg-slate-900 h-4 rounded-sm border border-pink-500 overflow-hidden p-0.5">
+                <div id="hudBossHealthBar" class="h-full bg-gradient-to-r from-pink-600 to-purple-500 bar-glow transition-all duration-100" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Bottom HUD Bar -->
+        <div class="flex justify-between items-end">
+            <!-- Secondary Nuke Charges -->
+            <div class="cyber-panel p-3 flex items-center gap-3">
+                <div class="text-xs font-orbitron text-orange-400 font-bold tracking-wider">EMP NUKES [E / R-CLICK]:</div>
+                <div id="hudNukeIcons" class="flex gap-1">
+                    <!-- Dynamic Nuke Icons -->
+                </div>
+            </div>
+
+            <!-- Action Controls / Audio Toggle -->
+            <div class="pointer-events-auto flex gap-2">
+                <button id="btnAudioToggle" class="cyber-btn px-3 py-2 text-xs flex items-center gap-2">
+                    <span id="audioIcon">🔊</span> <span id="audioStatus">SOUND ON</span>
+                </button>
+                <button id="btnPauseGame" class="cyber-btn px-3 py-2 text-xs">
+                    PAUSE [P]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN MENU SCREEN -->
+    <div id="menuScreen" class="overlay-screen">
+        <div class="cyber-panel p-8 md:p-12 max-w-xl w-11/12 text-center relative overflow-hidden">
+            <!-- Neon background pulse line -->
+            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-500 via-pink-500 to-yellow-400"></div>
+
+            <h1 class="text-4xl md:text-6xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-400 glow-cyan mb-2">
+                NEON STRIKE
+            </h1>
+            <p class="text-sm md:text-base font-orbitron text-cyan-300 tracking-widest mb-8">CYBERSPACE DEFENDER v2.5</p>
+
+            <div class="flex flex-col gap-4 max-w-xs mx-auto mb-8">
+                <button id="btnStartGame" class="cyber-btn py-4 text-lg">INITIALIZE SYSTEM</button>
+                <button id="btnHowToPlay" class="cyber-btn py-3 text-sm">FLIGHT MANUAL</button>
+                <button id="btnHighScores" class="cyber-btn cyber-btn-pink py-3 text-sm">HALL OF FAME</button>
+            </div>
+
+            <div class="text-xs text-slate-400 font-orbitron tracking-wider">
+                NEON ARCADE CORE ENGINE • NO EXTERNAL ASSETS
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW TO PLAY MODAL -->
+    <div id="helpModal" class="overlay-screen hidden-screen">
+        <div class="cyber-panel p-6 md:p-8 max-w-2xl w-11/12 max-h-[85vh] overflow-y-auto">
+            <h2 class="text-2xl font-orbitron font-bold text-cyan-400 mb-4 pb-2 border-b border-cyan-500/30">PILOT TACTICAL MANUAL</h2>
+            
+            <div class="space-y-4 text-sm text-slate-200 font-sans">
+                <div>
+                    <h3 class="font-orbitron text-pink-400 font-bold mb-1">CONTROLS</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-300">
+                        <li><strong class="text-cyan-300">WASD or Arrow Keys:</strong> Maneuver Starfighter</li>
+                        <li><strong class="text-cyan-300">Mouse Aim / Spacebar:</strong> Aim & Fire Primary Plasma Cannons</li>
+                        <li><strong class="text-cyan-300">E Key or Right Click:</strong> Trigger Screen-Clearing EMP Nuke</li>
+                        <li><strong class="text-cyan-300">P / ESC:</strong> Pause Tactical Simulation</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-orbitron text-yellow-400 font-bold mb-1">POWER-UP DROPS</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div class="p-2 bg-slate-900/60 border border-cyan-400/40 rounded"><span class="text-cyan-400 font-bold">TRIPLE CANNON:</span> 3-way laser beam spread</div>
+                        <div class="p-2 bg-slate-900/60 border border-yellow-400/40 rounded"><span class="text-yellow-400 font-bold">OVERCHARGE:</span> Hyper rapid-fire plasma rate</div>
+                        <div class="p-2 bg-slate-900/60 border border-blue-400/40 rounded"><span class="text-blue-400 font-bold">SHIELD BOOST:</span> Instant 100% shield restore</div>
+                        <div class="p-2 bg-slate-900/60 border border-green-400/40 rounded"><span class="text-green-400 font-bold">REPAIR KIT:</span> Restores ship hull integrity</div>
+                        <div class="p-2 bg-slate-900/60 border border-orange-400/40 rounded"><span class="text-orange-400 font-bold">EMP BOMB:</span> Stores +1 secondary Nuke bomb</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-orbitron text-purple-400 font-bold mb-1">HOSTILE TARGETS</h3>
+                    <p class="text-xs text-slate-300">Beware of fast Hunter Drones, maneuvering Interceptors, heavy Battleships, and colossal multi-phase Cyber Titan Bosses appearing every 5 waves!</p>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button id="btnCloseHelp" class="cyber-btn px-8 py-2 text-sm">UNDERSTOOD</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIGH SCORES MODAL -->
+    <div id="scoresModal" class="overlay-screen hidden-screen">
+        <div class="cyber-panel p-6 md:p-8 max-w-md w-11/12 text-center">
+            <h2 class="text-2xl font-orbitron font-bold text-pink-500 mb-4 pb-2 border-b border-pink-500/30">HALL OF FAME</h2>
+            <div id="highScoresList" class="space-y-2 mb-6 max-h-60 overflow-y-auto">
+                <!-- Scores dynamic insertion -->
+            </div>
+            <button id="btnCloseScores" class="cyber-btn px-8 py-2 text-sm">BACK TO MENU</button>
+        </div>
+    </div>
+
+    <!-- PAUSE MENU OVERLAY -->
+    <div id="pauseScreen" class="overlay-screen hidden-screen">
+        <div class="cyber-panel p-8 max-w-sm w-11/12 text-center">
+            <h2 class="text-3xl font-orbitron font-bold text-cyan-400 mb-6 glow-cyan">SYSTEM PAUSED</h2>
+            <div class="flex flex-col gap-3">
+                <button id="btnResume" class="cyber-btn py-3 text-sm">RESUME MISSION</button>
+                <button id="btnRestart" class="cyber-btn py-3 text-sm">RESTART FLIGHT</button>
+                <button id="btnQuitToMenu" class="cyber-btn cyber-btn-pink py-3 text-sm">ABORT TO MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="gameOverScreen" class="overlay-screen hidden-screen">
+        <div class="cyber-panel p-6 md:p-10 max-w-lg w-11/12 text-center relative">
+            <div class="text-pink-500 font-orbitron text-xs tracking-widest mb-1">SHIP DESTROYED</div>
+            <h2 class="text-4xl font-black font-orbitron text-white glow-pink mb-6">MISSION FAILED</h2>
+
+            <!-- Stats Container -->
+            <div class="grid grid-cols-2 gap-3 mb-6 text-left font-orbitron text-xs">
+                <div class="p-3 bg-slate-900/80 border border-cyan-500/30">
+                    <div class="text-slate-400">FINAL SCORE</div>
+                    <div id="goFinalScore" class="text-xl font-bold text-cyan-400">0</div>
+                </div>
+                <div class="p-3 bg-slate-900/80 border border-pink-500/30">
+                    <div class="text-slate-400">HIGHEST RECORD</div>
+                    <div id="goHighScore" class="text-xl font-bold text-pink-400">0</div>
+                </div>
+                <div class="p-3 bg-slate-900/80 border border-slate-700">
+                    <div class="text-slate-400">WAVES SURVIVED</div>
+                    <div id="goWave" class="text-lg font-bold text-white">0</div>
+                </div>
+                <div class="p-3 bg-slate-900/80 border border-slate-700">
+                    <div class="text-slate-400">HOSTILES ELIMINATED</div>
+                    <div id="goKills" class="text-lg font-bold text-yellow-400">0</div>
+                </div>
+                <div class="p-3 bg-slate-900/80 border border-slate-700">
+                    <div class="text-slate-400">ACCURACY</div>
+                    <div id="goAccuracy" class="text-lg font-bold text-green-400">0%</div>
+                </div>
+                <div class="p-3 bg-slate-900/80 border border-slate-700">
+                    <div class="text-slate-400">NUKES LAUNCHED</div>
+                    <div id="goNukes" class="text-lg font-bold text-orange-400">0</div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button id="btnRestartGameOver" class="cyber-btn flex-1 py-3 text-sm">TRY AGAIN</button>
+                <button id="btnMenuGameOver" class="cyber-btn cyber-btn-pink flex-1 py-3 text-sm">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Game Logic Script -->
+    <script src="game.js"></script>
+</body>
+</html>
